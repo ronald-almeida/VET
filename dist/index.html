@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Destrava Vet Vitalício. Oferta de R$ 287,00 com pagamento via Pix.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Destrava Vet - Vitalício | Checkout Pix</title>
+  <link rel="icon" href="./assets/logo.webp">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./vendor/qrcode.js" defer></script>
+  <script src="./app.js" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#checkout">Pular para o checkout</a>
+  <div class="preview-notice" id="preview-notice" hidden><span class="preview-dot"></span> Prévia do checkout · pagamentos ainda não ativados</div>
+  <main>
+    <header class="campaign">
+      <div class="offer-strip"><span class="offer-label">OFERTA EXCLUSIVA MEGA BLACK</span><span class="offer-divider"></span><span>Seu próximo passo na veterinária começa aqui.</span></div>
+      <img class="campaign-banner" src="./assets/banner.webp" alt="Mega Black DestravaVet" width="800" height="456" fetchpriority="high">
+    </header>
+
+    <div class="checkout-shell" id="checkout">
+      <section class="checkout-card" aria-labelledby="product-title">
+        <div class="country"><span aria-hidden="true">🇧🇷</span> Brasil <span class="country-currency">BRL</span></div>
+        <div class="product">
+          <img src="./assets/logo.webp" alt="DestravaVet" width="94" height="94">
+          <div><h1 id="product-title">Destrava Vet - Vitalício</h1><p class="author">Autor: FABIOLA C. DE ALMEIDA</p><p class="product-price" data-price>R$ 287,00</p><p class="payment-subtitle">À vista no Pix · pagamento único</p><span class="offer-badge">Oferta Exclusiva Mega Black</span></div>
+        </div>
+
+        <form id="checkout-form" novalidate>
+          <fieldset>
+            <legend>Dados pessoais</legend>
+            <p class="section-hint">Preencha seus dados para continuar.</p>
+            <div class="field"><label for="email">Seu email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="Digite seu email" maxlength="254" required aria-describedby="email-error"><span class="field-error" id="email-error"></span></div>
+            <div class="field"><label for="confirm-email">Confirme seu email</label><input id="confirm-email" name="confirmEmail" type="email" autocomplete="off" placeholder="Digite novamente seu email" maxlength="254" required aria-describedby="confirm-email-error"><span class="field-error" id="confirm-email-error"></span></div>
+            <div class="field"><label for="name">Nome completo</label><input id="name" name="name" autocomplete="name" placeholder="Digite seu nome completo" maxlength="120" required aria-describedby="name-error"><span class="field-error" id="name-error"></span></div>
+            <div class="field-row">
+              <div class="field"><label for="document">CPF/CNPJ</label><input id="document" name="document" inputmode="numeric" placeholder="CPF ou CNPJ" maxlength="18" required aria-describedby="document-error"><span class="field-error" id="document-error"></span></div>
+              <div class="field"><label for="phone">Celular</label><div class="phone-input"><span aria-hidden="true">🇧🇷 +55</span><input id="phone" name="phone" type="tel" autocomplete="tel-national" placeholder="(11) 99999-9999" maxlength="15" required aria-describedby="phone-error"></div><span class="field-error" id="phone-error"></span></div>
+            </div>
+            <div class="field"><label for="postal-code">Código postal (CEP) <span class="optional">opcional</span></label><input id="postal-code" name="postalCode" autocomplete="postal-code" inputmode="numeric" placeholder="00000-000" maxlength="9" aria-describedby="postal-code-error"><span class="field-error" id="postal-code-error"></span></div>
+          </fieldset>
+
+          <fieldset class="payment-section">
+            <legend>Forma de pagamento</legend>
+            <div class="pix-card">
+              <div class="pix-card-heading"><span class="selected-radio" aria-hidden="true"></span><svg class="pix-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M10 4.5 14.6.6a2 2 0 0 1 2.8 0L22 4.5l-4.6 4.6a2 2 0 0 1-2.8 0ZM4.5 10 .6 14.6a2 2 0 0 0 0 2.8L4.5 22l7.1-7.1a6.2 6.2 0 0 1 8.8 0l7.1 7.1 3.9-4.6a2 2 0 0 0 0-2.8L27.5 10l-7.1 7.1a6.2 6.2 0 0 1-8.8 0ZM10 27.5l4.6 3.9a2 2 0 0 0 2.8 0l4.6-3.9-4.6-4.6a2 2 0 0 0-2.8 0Z"/></svg><strong>Pix</strong><span class="pix-selected">Selecionado</span></div>
+              <div class="pix-body">
+                <div class="pix-action">
+                  <p class="pix-benefit"><span aria-hidden="true">✓</span> Pague com o aplicativo do seu banco, usando o QR Code ou o Pix Copia e Cola.</p>
+                  <button class="primary-button" id="pay-button" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h2v2h-2zM21 14v7h-6M3 12h6M12 3v5M12 16v5M16 12h5"/></svg><span>Gerar QR Code Pix</span></button>
+                  <p class="pix-footnote">R$ 287,00 à vista · sem parcelamento</p>
+                </div>
+                <svg class="qr-illustration" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" aria-hidden="true"><rect x="8" y="8" width="32" height="32" rx="7"/><rect x="60" y="8" width="32" height="32" rx="7"/><rect x="8" y="60" width="32" height="32" rx="7"/><path d="M60 60v32m0-16h16V60m16 0v16m-16 16h16"/><path stroke-width="9" stroke-linecap="round" d="M24 23v2m52-2v2M24 75v2"/></svg>
+              </div>
+            </div>
+          </fieldset>
+          <section class="order-summary" aria-labelledby="summary-title"><h2 id="summary-title">Detalhes da compra</h2><div class="summary-product"><span>Destrava Vet - Vitalício</span><span data-price>R$ 287,00</span></div><div class="summary-total"><span>Total</span><strong data-price>R$ 287,00</strong></div></section>
+          <p class="form-note" id="form-note">Confira o valor e o beneficiário no aplicativo do seu banco antes de confirmar.</p>
+        </form>
+      </section>
+      <footer class="checkout-footer"><strong>DestravaVet</strong><p>Destrava Vet - Vitalício · FABIOLA C. DE ALMEIDA</p><p>Pagamento exclusivamente via Pix. Esta página é um checkout independente.</p><p class="footer-preview" id="footer-preview" hidden>Prévia: os dados preenchidos ficam apenas nesta página e não são enviados. A conexão com a Firebot ainda está pendente.</p></footer>
+    </div>
+  </main>
+
+  <dialog id="pix-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+    <button class="dialog-close" id="close-dialog" aria-label="Fechar pagamento" type="button">×</button>
+    <div class="dialog-heading"><span class="dialog-symbol" aria-hidden="true">✓</span><p class="eyebrow">DESTRAVA VET · VITALÍCIO</p><h2 id="dialog-title">Pague com Pix</h2><p id="dialog-description">Escaneie o QR Code no aplicativo do seu banco.</p><p class="dialog-amount" data-price>R$ 287,00</p></div>
+    <div class="dialog-alert" id="dialog-alert" role="status" hidden></div>
+    <div id="payment-loading" class="loading" hidden><span class="spinner"></span> Gerando seu Pix…</div>
+    <div id="payment-content" hidden>
+      <div class="qr-frame" id="qr-code" aria-label="QR Code do pagamento" role="img"></div>
+      <p class="qr-caption" id="qr-caption">Ou copie o código abaixo</p>
+      <label class="code-label" for="pix-code">Pix Copia e Cola</label>
+      <textarea id="pix-code" readonly rows="2" spellcheck="false"></textarea>
+      <button class="primary-button copy-button" id="copy-button" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V3H3v13h5"/></svg><span>Copiar código Pix</span></button>
+      <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+      <ol class="payment-instructions"><li>Abra o app do seu banco e escolha <strong>Pix</strong>.</li><li>Escaneie o QR Code ou use <strong>Pix Copia e Cola</strong>.</li><li>Confira os dados e confirme o pagamento no banco.</li></ol>
+    </div>
+    <button class="text-button" id="back-button" type="button">Voltar ao checkout</button>
+  </dialog>
+</body>
+</html>
