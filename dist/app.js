@@ -8,6 +8,8 @@ const price = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL
 document.querySelectorAll('[data-price]').forEach((node) => { node.textContent = price; });
 let activePayment = null;
 let activeCustomer = '';
+let creationFingerprint = '';
+let creationKey = '';
 let creating = false;
 let checking = false;
 let pollTimer;
@@ -53,7 +55,7 @@ function renderState() {
   const paid = status === 'PAID';
   const pending = status === 'PENDING';
   $('dialog-title').textContent = paid ? 'Pagamento confirmado!' : pending ? 'Pague com Pix' : status === 'REFUNDED' ? 'Pagamento reembolsado' : 'Pix encerrado';
-  $('dialog-description').textContent = paid ? 'A Firebot confirmou o recebimento do seu pagamento.' : pending ? 'Escaneie o QR Code no aplicativo do seu banco.' : status === 'REFUNDED' ? 'A Firebot informou o reembolso deste pagamento.' : 'Esta cobrança foi cancelada ou expirou.';
+  $('dialog-description').textContent = paid ? 'A Atlas Pags confirmou o recebimento do seu pagamento.' : pending ? 'Escaneie o QR Code no aplicativo do seu banco.' : status === 'REFUNDED' ? 'A Atlas Pags informou o reembolso deste pagamento.' : 'Esta cobrança foi cancelada ou expirou.';
   $('dialog-symbol').textContent = paid ? '✓' : pending ? '◇' : '!';
   $('payment-content').hidden = !pending;
   $('payment-confirmed').hidden = !paid;
@@ -99,7 +101,7 @@ async function checkPayment(manual = true) {
     payment.status = result.status;
     alertMessage('');
     renderState();
-    if (manual && payment.status === 'PENDING') $('payment-status').textContent = 'Ainda aguardando a confirmação da Firebot.';
+    if (manual && payment.status === 'PENDING') $('payment-status').textContent = 'Ainda aguardando a confirmação da Atlas Pags.';
   } catch (error) {
     if (activePayment !== payment) return;
     $('payment-status').textContent = 'Consulta indisponível agora. Você pode verificar novamente.';
@@ -133,13 +135,17 @@ form.addEventListener('submit', async (event) => {
     showPayment(activePayment);
     return;
   }
+  if (activePayment || creationFingerprint !== fingerprint) {
+    creationFingerprint = fingerprint;
+    creationKey = crypto.randomUUID();
+  }
   stopPolling();
   activePayment = null;
   creating = true;
   $('pay-button').disabled = true;
   $('pay-button').querySelector('span').textContent = 'Gerando seu Pix…';
   $('dialog-title').textContent = 'Gerando seu Pix';
-  $('dialog-description').textContent = 'Aguarde enquanto a Firebot prepara sua cobrança.';
+  $('dialog-description').textContent = 'Aguarde enquanto a Atlas Pags prepara sua cobrança.';
   alertMessage('');
   $('payment-content').hidden = true;
   $('payment-confirmed').hidden = true;
@@ -149,7 +155,7 @@ form.addEventListener('submit', async (event) => {
   $('payment-loading').hidden = false;
   try {
     const response = await fetch('/api/pix', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': creationKey },
       body: JSON.stringify({ customer }), signal: AbortSignal.timeout(25000),
     });
     const payment = await response.json();

@@ -4,5 +4,5 @@ export const checkout = Object.freeze({
   author: 'FABIOLA C. DE ALMEIDA',
   amountInCents: 28700,
   currency: 'BRL',
-  provider: 'Firebot BR',
+  provider: 'Atlas Pags',
 });

@@ -1,18 +1,18 @@
-import { AMOUNT_IN_CENTS, STORE_URL, readPost, normalizeCustomer, firebotRequest, normalizePayment, secureResponse, sendError } from '../lib/firebot.js';
+import { AMOUNT_IN_CENTS, STORE_URL, readPost, readIdempotencyKey, normalizeCustomer, atlasRequest, normalizePayment, secureResponse, sendError } from '../lib/atlas.js';
 
 export default async function handler(request, response) {
   secureResponse(response);
   response.setHeader('Allow', 'POST');
   try {
     const { customer } = readPost(request);
+    const idempotencyKey = readIdempotencyKey(request);
     const buyer = normalizeCustomer(customer);
-    const data = await firebotRequest('/api/v1/pix/create', { method: 'POST', body: {
+    const data = await atlasRequest('/charges', { method: 'POST', idempotencyKey, body: {
       amount: AMOUNT_IN_CENTS / 100,
-      productType: 'DIGITAL',
+      method: 'pix',
       description: 'Destrava Vet - Vitalício',
-      storeUrl: STORE_URL,
+      checkout_url: STORE_URL,
       customer: buyer,
-      qrStyle: 'plain',
     } });
     return response.status(200).json(normalizePayment(data));
   } catch (error) { return sendError(response, error); }
