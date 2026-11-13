@@ -1,14 +1,15 @@
-import { firebotRequest, secureResponse } from '../lib/firebot.js';
+import { atlasRequest, secureResponse } from '../lib/atlas.js';
 
 // Read-only authentication probe: no account details or key are returned.
 export default async function handler(request, response) {
   secureResponse(response);
   if (request.method !== 'GET') return response.status(405).json({ available: false });
   try {
-    await firebotRequest('/api/v1/account');
-    return response.status(200).json({ available: true, provider: 'Firebot BR', amountInCents: 28700 });
+    const result = await atlasRequest('/ping');
+    if (result.ok !== true) throw new Error('Atlas ping failed');
+    return response.status(200).json({ available: true, provider: 'Atlas Pags', amountInCents: 28700 });
   } catch (error) {
-    console.error('firebot_health_failed', { code: error.code ?? 'INTERNAL_ERROR' });
-    return response.status(503).json({ available: false, provider: 'Firebot BR', code: error.code ?? 'INTERNAL_ERROR' });
+    console.error('atlas_health_failed', { code: error.code ?? 'INTERNAL_ERROR' });
+    return response.status(503).json({ available: false, provider: 'Atlas Pags', code: error.code ?? 'INTERNAL_ERROR' });
   }
 }

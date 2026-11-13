@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { checkout } from '../dist/config.js';
 import { validDocument, validateCustomer, formatPhone } from '../dist/validation.js';
 
-test('a oferta é R$ 287,00 e usa a Firebot BR sem modo de demonstração', () => {
+test('a oferta é R$ 287,00 e usa a Atlas Pags sem modo de demonstração', () => {
   assert.equal(checkout.amountInCents, 28700);
-  assert.equal(checkout.provider, 'Firebot BR');
+  assert.equal(checkout.provider, 'Atlas Pags');
   assert.equal(checkout.preview, undefined);
 });
 test('rejeita documentos repetidos ou com dígitos verificadores incorretos', () => {

@@ -1,20 +1,18 @@
 # Destrava Vet — checkout Pix
 
-Checkout de produção para **R$ 287,00**, integrado à **Firebot BR**, com Pix como único método, QR Code, Copia e Cola e acompanhamento de pagamento no pop-up.
+Checkout de **R$ 287,00**, com Pix como único método, QR Code, Copia e Cola e acompanhamento do pagamento no pop-up.
 
-## Integração
+## Integração Atlas Pags
 
-Documentação utilizada: https://firebotbr.com/integracoes/docs
+Documentação: <https://atlaspags.com/docs/>. A API usa `https://atlaspags.com/api/v1` e autentica chamadas do servidor com `Authorization: Bearer ATLAS_SECRET_KEY`.
 
-- `POST /api/pix` valida o comprador no servidor e solicita a cobrança em `POST https://firebotbr.com/api/v1/pix/create`.
-- O valor enviado é `287` reais, fixado no servidor. O preço recebido do navegador é ignorado.
-- Produto `DIGITAL`, descrição `Destrava Vet - Vitalício`, checkout de origem `https://vet-pi-self.vercel.app`.
-- A resposta é validada antes de exibir o QR: identificador, valor e integridade CRC16 do código Pix.
-- `POST /api/pix-status` consulta `GET /api/v1/pix/{transactionId}`. Cada consulta exige um token assinado emitido na criação da cobrança; apenas o status `PAID` com o valor correto confirma o pagamento.
-- `GET /api/payment-health` verifica a autenticação na Firebot sem retornar dados da conta.
-- Nenhum endpoint de saque ou transferência é usado.
+- `POST /api/pix` valida o comprador e cria a cobrança em `POST /charges` com valor, método `pix`, descrição, URL do checkout e os dados do cliente.
+- O valor é fixado em 28.700 centavos no servidor. A resposta é validada antes de exibir o QR code de `pix.code`.
+- `POST /api/pix-status` consulta `GET /charges/{id}` com um token assinado emitido pelo checkout; o pagamento só é confirmado após a Atlas retornar `paid` para a mesma cobrança e valor.
+- `GET /api/payment-health` verifica a chave com `GET /ping`, sem retornar dados da conta.
+- O checkout envia `Idempotency-Key` e reutiliza a chave ao repetir a mesma tentativa.
 
-A chave `FIREBOT_API_KEY`, no formato `fire_sk_live_...`, deve existir como Secret em Production na Vercel. Ela é lida apenas pelas funções do servidor. Não existe modo de demonstração nem geração de QR fictício no código publicado. Se a API falhar, o checkout informa o erro.
+A chave `ATLAS_SECRET_KEY`, no formato `atlas_sk_...`, deve existir como Secret em Production na Vercel e só é lida pelas funções do servidor. Não existe modo de demonstração nem geração de QR fictício no código publicado. Se a API falhar, o checkout informa o erro.
 
 ## Executar e verificar
 
@@ -29,7 +27,7 @@ O servidor local usa http://127.0.0.1:4173. Para verificar somente a interface s
 
 Em ambientes sem permissão para subprocessos: `node --test --test-isolation=none tests/*.test.mjs`.
 
-Os testes usam respostas controladas e registros sintéticos exclusivamente em memória, sem enviar dados de teste à Firebot. Cobrem valor fixo, validação, origem, assinatura, checksum, status e proteção de informações privadas.
+Os testes usam respostas controladas e registros sintéticos exclusivamente em memória, sem enviar dados de teste à Atlas Pags. Pagamentos reais precisam ser homologados com a conta do vendedor.
 
 ## Publicação
 
@@ -41,11 +39,11 @@ Branch de produção: `main`. `vercel.json` publica `dist/`, disponibiliza as fu
 
 ## Operação
 
-O pop-up reutiliza a cobrança atual para os mesmos dados e impede cliques simultâneos. A consulta é pausada ao fechar o modal ou ocultar a aba. O botão “Já paguei” consulta a Firebot; ele não aprova pagamentos por conta própria.
+O pop-up reutiliza a cobrança atual para os mesmos dados e impede cliques simultâneos. A consulta é pausada ao fechar o modal ou ocultar a aba. O botão “Já paguei” consulta a Atlas Pags; ele não aprova pagamentos por conta própria.
 
-As cobranças e os dados do comprador são registrados pela Firebot. O checkout não mantém banco de pedidos próprio. O token de consulta vale 24 horas; isso não altera a validade da cobrança na Firebot. A API documentada não estabelece idempotência de criação, por isso requisições novas após recarregar a página podem gerar cobranças pendentes adicionais.
+As cobranças e os dados do comprador são registrados pela Atlas Pags. O checkout não mantém banco de pedidos próprio. O token de consulta vale 24 horas, sem alterar a validade da cobrança na Atlas. A chave de idempotência reduz cobranças duplicadas durante novas tentativas da mesma sessão.
 
-A entrega do curso e o envio de email não são executados por este checkout. A venda deve ser acompanhada no painel Firebot e a entrega deve seguir a operação do vendedor. Não há promessa de entrega automática na página.
+A entrega do curso e o envio de email não são executados por este checkout. A venda deve ser acompanhada no painel Atlas Pags e a entrega deve seguir a operação do vendedor. Não há promessa de entrega automática na página.
 
 ## Recursos
 
