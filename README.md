@@ -1,50 +1,56 @@
 # Destrava Vet — checkout Pix
 
-Checkout responsivo baseado na referência fornecida, com oferta fixa de **R$ 287,00**, formulário, Pix como único método, modal com QR Code e botão de copiar.
+Checkout de produção para **R$ 287,00**, integrado à **Firebot BR**, com Pix como único método, QR Code, Copia e Cola e acompanhamento de pagamento no pop-up.
 
-## Estado atual
+## Integração
 
-**Prévia visual, sem cobrança real.** O QR exibido codifica uma mensagem de demonstração não pagável. Os dados do formulário permanecem apenas na memória da página. Não há envio de email, registro de pedido, liberação de acesso ou confirmação de pagamento nesta versão.
+Documentação utilizada: https://firebotbr.com/integracoes/docs
 
-A integração solicitada é **Firebot BR**. A documentação em <https://firebotbr.com/integracoes/docs> exige login e não estava acessível na implementação inicial. Por esse motivo, não foram inventados endpoints ou formatos de autenticação: `api/pix.js` responde 503 até a integração real ser implementada. Alterar apenas `preview` não ativa o pagamento.
+- `POST /api/pix` valida o comprador no servidor e solicita a cobrança em `POST https://firebotbr.com/api/v1/pix/create`.
+- O valor enviado é `287` reais, fixado no servidor. O preço recebido do navegador é ignorado.
+- Produto `DIGITAL`, descrição `Destrava Vet - Vitalício`, checkout de origem `https://vet-pi-self.vercel.app`.
+- A resposta é validada antes de exibir o QR: identificador, valor e integridade CRC16 do código Pix.
+- `POST /api/pix-status` consulta `GET /api/v1/pix/{transactionId}`. Cada consulta exige um token assinado emitido na criação da cobrança; apenas o status `PAID` com o valor correto confirma o pagamento.
+- `GET /api/payment-health` verifica a autenticação na Firebot sem retornar dados da conta.
+- Nenhum endpoint de saque ou transferência é usado.
 
-## Executar
+A chave `FIREBOT_API_KEY`, no formato `fire_sk_live_...`, deve existir como Secret em Production na Vercel. Ela é lida apenas pelas funções do servidor. Não existe modo de demonstração nem geração de QR fictício no código publicado. Se a API falhar, o checkout informa o erro.
 
-Requer Node.js 22 ou superior. Não há dependências para instalar.
+## Executar e verificar
+
+Node.js 22 ou superior. Não há dependências para instalar.
 
 ```sh
-node scripts/serve.mjs
+node --env-file=.env.local scripts/serve.mjs
 node --test tests/*.test.mjs
 ```
 
-Abra <http://127.0.0.1:4173>. Em ambientes que bloqueiam subprocessos, os testes podem ser executados com `node --test --test-isolation=none tests/*.test.mjs`.
+O servidor local usa http://127.0.0.1:4173. Para verificar somente a interface sem configurar uma chave, execute `node scripts/serve.mjs`; a criação de cobrança retorna indisponibilidade.
 
-## Vercel
+Em ambientes sem permissão para subprocessos: `node --test --test-isolation=none tests/*.test.mjs`.
 
-O arquivo `vercel.json` publica `dist/` e disponibiliza a função `api/pix.js`. O comando de build executa os testes. A conexão Git deve usar `ronald-almeida/VET`, branch `main`.
+Os testes usam respostas controladas e registros sintéticos exclusivamente em memória, sem enviar dados de teste à Firebot. Cobrem valor fixo, validação, origem, assinatura, checksum, status e proteção de informações privadas.
 
-## Concluir Firebot BR
+## Publicação
 
-1. Consultar a documentação autenticada: criação de cobrança, autenticação, unidade do valor, consulta de status, expiração, idempotência e validação de webhook.
-2. Implementar a chamada autenticada exclusivamente na função de servidor, com o valor fixado em **28700 centavos**, convertido para a unidade documentada pelo provedor. Validar os dados recebidos novamente no servidor.
-3. Configurar credenciais nas variáveis de ambiente da Vercel, nunca em `dist/`, no Git ou em logs. Usar os nomes exigidos pela integração verificada.
-4. Normalizar a resposta para o contrato interno do frontend: `{ amountInCents: 28700, copyPaste: "...", expiresAt: "..." }`. Este é um contrato interno, não uma alegação sobre a resposta da Firebot.
-5. Testar cobrança em sandbox quando disponível, recusas, timeout, duplicação e expiração. A confirmação de pagamento e a entrega do produto dependem de validação real do provedor; não devem ser simuladas em produção.
-6. Desativar `checkout.preview` somente após os testes reais da integração. Ajustar os testes de disponibilidade para o modo final.
+GitHub: https://github.com/ronald-almeida/VET
 
-## Arquivos
+Vercel: https://vet-pi-self.vercel.app
 
-- `dist/index.html` e `dist/styles.css`: layout.
-- `dist/app.js`: validação, modal, geração local do QR e cópia.
-- `dist/config.js`: dados públicos da oferta e modo de prévia.
-- `dist/validation.js`: validação compartilhável de campos.
-- `api/pix.js`: ponto de integração do servidor, bloqueado por enquanto.
-- `tests/checkout.test.mjs`: verificações de preço, validação e bloqueio de cobranças sem integração.
+Branch de produção: `main`. `vercel.json` publica `dist/`, disponibiliza as funções `api/` e executa os testes durante o build. A chave privada deve permanecer fora do Git, do navegador e dos logs.
 
-## Referência e recursos
+## Operação
 
-Referência visual: <https://pay.hotmart.com/F102592676T?off=q2qajwt0&checkoutMode=10&bid=1794412157346>.
+O pop-up reutiliza a cobrança atual para os mesmos dados e impede cliques simultâneos. A consulta é pausada ao fechar o modal ou ocultar a aba. O botão “Já paguei” consulta a Firebot; ele não aprova pagamentos por conta própria.
 
-O banner e a marca DestravaVet foram reutilizados da referência fornecida. O checkout independente não utiliza o selo de proteção, os termos ou a alegação de processamento da Hotmart. Não foram copiados scripts de rastreamento ou credenciais da referência.
+As cobranças e os dados do comprador são registrados pela Firebot. O checkout não mantém banco de pedidos próprio. O token de consulta vale 24 horas; isso não altera a validade da cobrança na Firebot. A API documentada não estabelece idempotência de criação, por isso requisições novas após recarregar a página podem gerar cobranças pendentes adicionais.
 
-QR Code: `qrcode-generator` 1.4.4, Kazuhiko Arase, licença MIT. A biblioteca é servida localmente e preserva o aviso de direitos autorais em `dist/vendor/qrcode.js`.
+A entrega do curso e o envio de email não são executados por este checkout. A venda deve ser acompanhada no painel Firebot e a entrega deve seguir a operação do vendedor. Não há promessa de entrega automática na página.
+
+## Recursos
+
+Referência visual fornecida: https://pay.hotmart.com/F102592676T?off=q2qajwt0&checkoutMode=10&bid=1794412157346
+
+Banner e marca DestravaVet reutilizados da referência. O checkout independente não utiliza o selo de proteção ou alegação de processamento da Hotmart.
+
+QR Code: `qrcode-generator` 1.4.4, Kazuhiko Arase, MIT. Biblioteca servida localmente; avisos em `dist/vendor/`.

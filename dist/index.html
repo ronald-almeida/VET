@@ -8,13 +8,12 @@
   <meta name="referrer" content="no-referrer">
   <title>Destrava Vet - Vitalício | Checkout Pix</title>
   <link rel="icon" href="./assets/logo.webp">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=2">
   <script src="./vendor/qrcode.js" defer></script>
-  <script src="./app.js" type="module"></script>
+  <script src="./app.js?v=2" type="module"></script>
 </head>
 <body>
   <a class="skip-link" href="#checkout">Pular para o checkout</a>
-  <div class="preview-notice" id="preview-notice" hidden><span class="preview-dot"></span> Prévia do checkout · pagamentos ainda não ativados</div>
   <main>
     <header class="campaign">
       <div class="offer-strip"><span class="offer-label">OFERTA EXCLUSIVA MEGA BLACK</span><span class="offer-divider"></span><span>Seu próximo passo na veterinária começa aqui.</span></div>
@@ -61,13 +60,13 @@
           <p class="form-note" id="form-note">Confira o valor e o beneficiário no aplicativo do seu banco antes de confirmar.</p>
         </form>
       </section>
-      <footer class="checkout-footer"><strong>DestravaVet</strong><p>Destrava Vet - Vitalício · FABIOLA C. DE ALMEIDA</p><p>Pagamento exclusivamente via Pix. Esta página é um checkout independente.</p><p class="footer-preview" id="footer-preview" hidden>Prévia: os dados preenchidos ficam apenas nesta página e não são enviados. A conexão com a Firebot ainda está pendente.</p></footer>
+      <footer class="checkout-footer"><strong>DestravaVet</strong><p>Destrava Vet - Vitalício · FABIOLA C. DE ALMEIDA</p><p>Pagamento via Pix processado pela Firebot BR.</p><p>Ao gerar o Pix, seus dados de identificação são enviados à Firebot para emitir a cobrança. Confira o valor e o beneficiário no aplicativo do banco antes de pagar.</p></footer>
     </div>
   </main>
 
   <dialog id="pix-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
     <button class="dialog-close" id="close-dialog" aria-label="Fechar pagamento" type="button">×</button>
-    <div class="dialog-heading"><span class="dialog-symbol" aria-hidden="true">✓</span><p class="eyebrow">DESTRAVA VET · VITALÍCIO</p><h2 id="dialog-title">Pague com Pix</h2><p id="dialog-description">Escaneie o QR Code no aplicativo do seu banco.</p><p class="dialog-amount" data-price>R$ 287,00</p></div>
+    <div class="dialog-heading"><span class="dialog-symbol" id="dialog-symbol" aria-hidden="true">◇</span><p class="eyebrow">DESTRAVA VET · VITALÍCIO</p><h2 id="dialog-title">Pague com Pix</h2><p id="dialog-description">Escaneie o QR Code no aplicativo do seu banco.</p><p class="dialog-amount" data-price>R$ 287,00</p></div>
     <div class="dialog-alert" id="dialog-alert" role="status" hidden></div>
     <div id="payment-loading" class="loading" hidden><span class="spinner"></span> Gerando seu Pix…</div>
     <div id="payment-content" hidden>
@@ -79,6 +78,10 @@
       <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
       <ol class="payment-instructions"><li>Abra o app do seu banco e escolha <strong>Pix</strong>.</li><li>Escaneie o QR Code ou use <strong>Pix Copia e Cola</strong>.</li><li>Confira os dados e confirme o pagamento no banco.</li></ol>
     </div>
+    <div id="payment-confirmed" class="payment-confirmed" hidden><strong>Seu pagamento foi recebido.</strong><p>Guarde o comprovante do banco e o código da transação abaixo.</p></div>
+    <p id="payment-status" class="payment-status" role="status" aria-live="polite"></p>
+    <button class="secondary-button" id="check-payment" type="button" hidden>Já paguei · verificar pagamento</button>
+    <p id="order-reference" class="order-reference" hidden></p>
     <button class="text-button" id="back-button" type="button">Voltar ao checkout</button>
   </dialog>
 </body>
